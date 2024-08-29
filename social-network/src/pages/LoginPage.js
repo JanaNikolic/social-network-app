@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Box, Button, Typography, Link } from "@mui/material";
 import LoginForm from "../components/LoginForm";
 import { useNavigate, useLocation } from "react-router-dom";
-import ResetPassword from "../components/ResetPassword";
+import ForgotPasswordForm from "../components/ForgotPasswordForm";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -101,7 +101,7 @@ const LoginPage = () => {
         }}
       >
         {location.pathname === "/password/reset" ? (
-          <ResetPassword />
+          <ForgotPasswordForm />
         ) : (
           <>
             <LoginForm />

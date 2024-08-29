@@ -13,7 +13,7 @@ import userService from "../services/UserService";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 
-const ResetPassword = () => {
+const ForgotPasswordForm = () => {
   const navigate = useNavigate();
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -33,7 +33,7 @@ const ResetPassword = () => {
 
   const handleResetPassword = async (values) => {
     try {
-      const data = await userService.resetPassword(values);
+      const data = await userService.forgotPassword(values);
       setSnackbarMessage(data);
       setSnackbarOpen(true);
       formik.resetForm();
@@ -101,4 +101,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword;
+export default ForgotPasswordForm;

@@ -2,6 +2,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const theme = createTheme({
   palette: {
@@ -47,6 +48,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/password/reset" element={<LoginPage />} />
+          <Route path="/reset-password/:uuid" element={<ResetPasswordPage />} />
         </Routes>
       </Router>
     </ThemeProvider>
