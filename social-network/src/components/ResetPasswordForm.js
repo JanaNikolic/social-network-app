@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { TextField, Button, Typography, Box, Snackbar } from "@mui/material";
+import { TextField, Button, Box, Snackbar } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import userService from "../services/UserService";
@@ -28,7 +28,7 @@ const ResetPasswordForm = () => {
     }),
     onSubmit: async (values) => {
       try {
-        const data = await userService.resetPassword({
+        await userService.resetPassword({
           id: uuid,
           email: values.email,
           newPassword: values.newPassword,

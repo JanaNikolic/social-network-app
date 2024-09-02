@@ -28,7 +28,7 @@ const LoginForm = () => {
 
   const handleLogin = async (values) => {
     try {
-      const data = await authService.login(values);
+      await authService.login(values);
       navigate("/home");
     } catch (err) {
       setSnackbarMessage(err.message);

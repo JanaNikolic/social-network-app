@@ -3,6 +3,10 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ProfilePage from "./pages/ProfilePage";
+import ProtectedRoutes from "./utils/ProtectedRoutes";
+import LoggedInUserGuard from "./utils/LoggedInUserGuard";
+import { Navigate } from "react-router-dom";
 
 const theme = createTheme({
   palette: {
@@ -45,10 +49,24 @@ function App() {
     <ThemeProvider theme={theme}>
       <Router>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/password/reset" element={<LoginPage />} />
+          <Route element={<LoggedInUserGuard />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/password/reset" element={<LoginPage />} />
+          </Route>
           <Route path="/reset-password/:uuid" element={<ResetPasswordPage />} />
+          <Route element={<ProtectedRoutes />}>
+            <Route path="/account/profile" element={<ProfilePage />} />
+          </Route>
+          <Route
+            path="*"
+            element={
+              <Navigate
+                to={localStorage.getItem("token") ? "/home" : "/login"}
+                replace
+              />
+            }
+          />
         </Routes>
       </Router>
     </ThemeProvider>

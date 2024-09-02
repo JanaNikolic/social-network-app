@@ -20,8 +20,7 @@ const ForgotPasswordForm = () => {
 
   const formik = useFormik({
     initialValues: {
-      email: "",
-      password: "",
+      email: ""
     },
     validationSchema: Yup.object({
       email: Yup.string().email("Invalid email format").required("Required"),
