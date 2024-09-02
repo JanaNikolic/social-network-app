@@ -110,6 +110,37 @@ const editProfilePicture = async (formData) => {
   }
 };
 
+const editUserInfo = async (body) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axiosInstance.put(API_URL, body, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (response.status === 200) return response.data;
+  } catch (error) {
+    if (error.response)
+      throw new Error(
+        error.response.data.message || "An error occurred"
+      );
+    throw new Error(error.message || "An error occurred");
+  }
+};
+
+const changePassword = async (body) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axiosInstance.put(`${API_URL}/passwords`, body, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (response.status === 200) return response.data;
+  } catch (error) {
+    if (error.response)
+      throw new Error(
+        error.response.data.message || "An error occurred during password change"
+      );
+    throw new Error(error.message || "An error occurred during password change");
+  }
+};
 
 const userService = {
   register,
@@ -118,5 +149,7 @@ const userService = {
   fetchProfilePicture,
   fetchUserData,
   editProfilePicture,
+  editUserInfo,
+  changePassword,
 };
 export default userService;

@@ -17,6 +17,7 @@ import jwtUtils from "../utils/jwtUtils";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import EditProfilePictureDialog from "../components/EditProfilePictureDialog";
+import EditProfileInfoDialog from "../components/edit-profile/EditProfileInfoDialog";
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState(null);
@@ -29,7 +30,31 @@ const ProfilePage = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [isEditPictureDialogOpen, setEditPictureDialogOpen] = useState(false);
+  const [isEditInfoDialogOpen, setEditInfoDialogOpen] = useState(false);
 
+  const handleEditInfo = () => {
+    setEditInfoDialogOpen(true);
+  };
+
+  const handleCloseInfoDialog = () => {
+    setEditInfoDialogOpen(false);
+  };
+
+  const handleEditInfoSubmit = (updatedUser, message) => {
+    if (updatedUser) {
+      setUserData((prevData) => ({
+        ...prevData,
+        name: updatedUser.name,
+        lastname: updatedUser.lastname,
+        username: updatedUser.username,
+      }));
+    }
+
+    setSnackbarMessage(message);
+    setSnackbarOpen(true);
+  };
+
+  
   const handleEditProfilePhoto = () => {
     setEditPictureDialogOpen(true);
   };
@@ -187,7 +212,7 @@ const ProfilePage = () => {
           >
             Add Post
           </Button>
-          <Button variant="contained" color="secondary" sx={{ mx: 2 }}>
+          <Button variant="contained" color="secondary" sx={{ mx: 2 }} onClick={handleEditInfo}>
             Edit Profile
           </Button>
         </Box>
@@ -236,6 +261,12 @@ const ProfilePage = () => {
       <EditProfilePictureDialog
         open={isEditPictureDialogOpen}
         onClose={handleClosePictureDialog}
+      />
+      <EditProfileInfoDialog
+        open={isEditInfoDialogOpen}
+        handleClose={handleCloseInfoDialog}
+        handleEditInfoSubmit={handleEditInfoSubmit}
+        user={userData}
       />
     </Container>
   );

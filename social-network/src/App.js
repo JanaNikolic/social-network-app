@@ -58,15 +58,6 @@ function App() {
           <Route element={<ProtectedRoutes />}>
             <Route path="/account/profile" element={<ProfilePage />} />
           </Route>
-          <Route
-            path="*"
-            element={
-              <Navigate
-                to={localStorage.getItem("token") ? "/home" : "/login"}
-                replace
-              />
-            }
-          />
         </Routes>
       </Router>
     </ThemeProvider>
