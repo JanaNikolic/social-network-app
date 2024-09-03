@@ -25,7 +25,7 @@ const EditPost = ({
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await postService.editPost(content , postId);
+      await postService.editPost(content, postId);
       handleSaveEdit(content, "Post updated successfully!");
     } catch (err) {
       handleSaveEdit(null, err.message);

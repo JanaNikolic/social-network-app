@@ -142,6 +142,22 @@ const changePassword = async (body) => {
   }
 };
 
+const fetchUserById = async (userId) => {
+  try {
+    const token = localStorage.getItem("token");
+    const userResponse = await axiosInstance.get(`${API_URL}/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (userResponse.status === 200) return userResponse.data;
+  } catch (error) {
+    if (error.response)
+      throw new Error(
+        error.response.data.message || "Failed to fetch user data"
+      );
+    throw new Error(error.message || "Failed to fetch user data");
+  }
+};
+
 const userService = {
   register,
   resetPassword,
@@ -151,5 +167,6 @@ const userService = {
   editProfilePicture,
   editUserInfo,
   changePassword,
+  fetchUserById,
 };
 export default userService;

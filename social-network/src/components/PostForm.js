@@ -56,14 +56,18 @@ const PostForm = ({ open, handleClose, handlePostSubmit }) => {
           type="text"
           fullWidth
           multiline
-          row={10}
+          rows={10}
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} variant="contained" color="secondary">Cancel</Button>
-        <Button type="submit" variant="contained" color="primary">Post</Button>
+        <Button onClick={handleClose} variant="contained" color="secondary">
+          Cancel
+        </Button>
+        <Button type="submit" variant="contained" color="primary">
+          Post
+        </Button>
       </DialogActions>
     </Dialog>
   );

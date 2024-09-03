@@ -2,10 +2,25 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Menu, MenuItem, Snackbar } from "@mui/material";
 import friendService from "../services/FriendService";
 
-const FriendRequestButton = (userData) => {
+const FriendRequestButton = ({ userData, onChangeRequest }) => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [request, setRequest] = useState(null);
+  const [user, setUser] = useState(userData);
+
+  useEffect(() => {
+    const fetchFriendRequest = async () => {
+      try {
+        const data = await friendService.getFriendRequestsByUserId(user.id);
+        setRequest(data);
+      } catch (err) {
+        setSnackbarMessage(err.message);
+        setSnackbarOpen(true);
+      }
+    };
+    fetchFriendRequest();
+  }, [user]);
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -21,10 +36,12 @@ const FriendRequestButton = (userData) => {
 
   const handleAcceptRequest = async () => {
     try {
-      await friendService.acceptFriendRequest(userData.id);
+      await friendService.acceptFriendRequest(user.id);
       setSnackbarMessage("Friend request accepted");
       setSnackbarOpen(true);
-      //   setUserData({ ...userData, friendStatus: "ACCEPTED", isFriend: true });
+      setUser({ ...user, isFriend: true });
+      setRequest({ ...request, status: "ACCEPTED" });
+      onChangeRequest();
       handleMenuClose();
     } catch (err) {
       setSnackbarMessage(err.message);
@@ -34,10 +51,12 @@ const FriendRequestButton = (userData) => {
 
   const handleDeleteRequest = async () => {
     try {
-      await friendService.rejectFriendRequest(userData.id);
+      await friendService.rejectFriendRequest(user.id);
       setSnackbarMessage("Friend request rejected");
       setSnackbarOpen(true);
-      //   setUserData({ ...userData, friendStatus: "none", isFriend: false });
+      setUser({ ...user, isFriend: false });
+      setRequest(null);
+      onChangeRequest();
       handleMenuClose();
     } catch (err) {
       setSnackbarMessage(err.message);
@@ -47,10 +66,10 @@ const FriendRequestButton = (userData) => {
 
   const handleSendRequest = async () => {
     try {
-      await friendService.sendFriendRequest(userData.id);
+      const data = await friendService.sendFriendRequest(user.id);
       setSnackbarMessage("Friend request sent");
       setSnackbarOpen(true);
-      //   setUserData({ ...userData, friendStatus: "PENDING" });
+      setRequest(data);
     } catch (err) {
       setSnackbarMessage(err.message);
       setSnackbarOpen(true);
@@ -59,43 +78,56 @@ const FriendRequestButton = (userData) => {
 
   return (
     <Box display="flex" flexDirection="row" alignItems="center" mt={4} p={4}>
-      <Box ml="auto">
-        {userData.friendStatus === "PENDING" && userData.isFriend === false ? (
-          <Button variant="contained" color="primary" onClick={handleMenuOpen}>
-            Respond
-          </Button>
-        ) : userData.friendStatus === "NONE" ? (
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleSendRequest}
+      {request ? (
+        <Box>
+          <Box ml="auto">
+            {request.status === "PENDING" && user.id === request.senderId ? (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleMenuOpen}
+              >
+                Respond
+              </Button>
+            ) : request.status === "PENDING" &&
+              user.id === request.receiverId ? (
+              <Button variant="contained" color="secondary">
+                Request Sent
+              </Button>
+            ) : request.status === "ACCEPTED" || user.isFriend ? (
+              <Button variant="contained" color="primary">
+                Friend
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSendRequest}
+              >
+                Add Friend
+              </Button>
+            )}
+          </Box>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
           >
-            Add Friend
-          </Button>
-        ) : userData.friendStatus === "PENDING" ? (
-          <Button variant="contained" color="secondary">
-            Request Sent
-          </Button>
-        ) : (
-          <Button variant="contained" color="primary">
-            Friend
-          </Button>
-        )}
-      </Box>
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
-        <MenuItem onClick={handleAcceptRequest}>Confirm</MenuItem>
-        <MenuItem onClick={handleDeleteRequest}>Delete</MenuItem>
-      </Menu>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-        message={snackbarMessage}
-      />
+            <MenuItem onClick={handleAcceptRequest}>Confirm</MenuItem>
+            <MenuItem onClick={handleDeleteRequest}>Delete</MenuItem>
+          </Menu>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={handleSnackbarClose}
+            message={snackbarMessage}
+          />
+        </Box>
+      ) : (
+        <Button variant="contained" color="primary" onClick={handleSendRequest}>
+          Add Friend
+        </Button>
+      )}
     </Box>
   );
 };

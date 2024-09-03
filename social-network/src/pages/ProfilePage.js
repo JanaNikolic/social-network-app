@@ -8,29 +8,38 @@ import {
   Button,
   Divider,
   Badge,
+  Tab,
+  Tabs,
 } from "@mui/material";
 import userService from "../services/UserService";
-import postService from "../services/PostService";
-import Post from "../components/Post";
 import PostForm from "../components/PostForm";
 import jwtUtils from "../utils/jwtUtils";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import EditProfilePictureDialog from "../components/EditProfilePictureDialog";
 import EditProfileInfoDialog from "../components/edit-profile/EditProfileInfoDialog";
+import PostsComponent from "../components/PostsComponent";
+import FriendsComponent from "../components/FriendsComponent";
+import FriendRequestsComponent from "../components/FriendRequestsComponent";
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState(null);
   const [profilePicture, setProfilePicture] = useState(null);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [posts, setPosts] = useState([]);
   const [isPostFormOpen, setIsPostFormOpen] = useState(false);
+  const [isEditPictureDialogOpen, setEditPictureDialogOpen] = useState(false);
+  const [isEditInfoDialogOpen, setEditInfoDialogOpen] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [tabValue, setTabValue] = useState(0);
+
   const [page, setPage] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [isEditPictureDialogOpen, setEditPictureDialogOpen] = useState(false);
-  const [isEditInfoDialogOpen, setEditInfoDialogOpen] = useState(false);
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
 
   const handleEditInfo = () => {
     setEditInfoDialogOpen(true);
@@ -54,7 +63,6 @@ const ProfilePage = () => {
     setSnackbarOpen(true);
   };
 
-  
   const handleEditProfilePhoto = () => {
     setEditPictureDialogOpen(true);
   };
@@ -113,44 +121,7 @@ const ProfilePage = () => {
     };
     fetchUserData();
     fetchProfilePicture();
-    fetchPosts(0);
   }, []);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore) {
-          setLoadingMore(true);
-          fetchPosts(page);
-        }
-      },
-      { threshold: 1.0 }
-    );
-
-    const target = document.querySelector("#scroll-anchor");
-    if (target) observer.observe(target);
-
-    return () => {
-      if (target) observer.unobserve(target);
-    };
-  }, [page, loadingMore, hasMore]);
-
-  const fetchPosts = async (page) => {
-    try {
-      const data = await postService.fetchPostsForLogedInUser(page, 4);
-      if (data.posts.length > 0) {
-        setPosts((prevPosts) => [...prevPosts, ...data.posts]);
-        setPage(page + 1);
-      } else {
-        setHasMore(false);
-      }
-    } catch (err) {
-      setSnackbarMessage(err.message);
-      setSnackbarOpen(true);
-    } finally {
-      setLoadingMore(false);
-    }
-  };
 
   if (!userData || !profilePicture) {
     return (
@@ -166,7 +137,19 @@ const ProfilePage = () => {
       </Typography>
     );
   }
-
+  function TabPanel({ children, value, index, ...other }) {
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+        {...other}
+      >
+        {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+      </div>
+    );
+  }
   return (
     <Container maxWidth="lg" sx={{ backgroundColor: "primary.white" }}>
       <Box display="flex" flexDirection="row" alignItems="center" mt={4} p={4}>
@@ -212,7 +195,12 @@ const ProfilePage = () => {
           >
             Add Post
           </Button>
-          <Button variant="contained" color="secondary" sx={{ mx: 2 }} onClick={handleEditInfo}>
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{ mx: 2 }}
+            onClick={handleEditInfo}
+          >
             Edit Profile
           </Button>
         </Box>
@@ -225,27 +213,38 @@ const ProfilePage = () => {
         pt={0}
       >
         <Divider sx={{ width: "100%", mb: 2 }} />
-        <Box>
-          {posts.length > 0 ? (
-            posts.map((post) => (
-              <Post
-                key={post.id}
-                id={post.id}
-                userId={userData.id}
-                username={post.postedBy.username}
-                content={post.content}
-                isLiked={post.isLiked}
-                numOfLikes={post.numOfLikes}
-                numOfComments={post.numOfComments}
-                createdAt={post.createdAt}
-                profilePicture={profilePicture}
-              />
-            ))
-          ) : (
-            <Typography>No posts to display.</Typography>
-          )}
-          <div id="scroll-anchor" style={{ height: "20px" }} />
-        </Box>
+
+        <Tabs value={tabValue} onChange={handleTabChange} centered>
+          <Tab label="Posts" />
+          <Tab label="Friends" />
+          <Tab label="Friend Requests" />
+        </Tabs>
+        <TabPanel value={tabValue} index={0}>
+          <PostsComponent
+            profilePicture={profilePicture}
+            posts={posts}
+            setPosts={setPosts}
+            page={page}
+            setPage={setPage}
+            loadingMore={loadingMore}
+            setLoadingMore={setLoadingMore}
+            hasMore={hasMore}
+            setHasMore={setHasMore}
+            setSnackbarMessage={setSnackbarMessage}
+            setSnackbarOpen={setSnackbarOpen}
+          />
+        </TabPanel>
+        <TabPanel value={tabValue} index={1} style={{width: "100%"}}>
+          <FriendsComponent
+            setSnackbarMessage={setSnackbarMessage}
+            setSnackbarOpen={setSnackbarOpen}
+          />
+        </TabPanel>
+        <TabPanel value={tabValue} index={2} style={{width: "100%"}}>
+          <FriendRequestsComponent
+          setSnackbarMessage={setSnackbarMessage}
+          setSnackbarOpen={setSnackbarOpen}/>
+        </TabPanel>
       </Box>
       <Snackbar
         open={snackbarOpen}

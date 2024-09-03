@@ -6,7 +6,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import LoggedInUserGuard from "./utils/LoggedInUserGuard";
-import { Navigate } from "react-router-dom";
+import UserProfilePage from "./pages/UserProfilePage";
 
 const theme = createTheme({
   palette: {
@@ -57,6 +57,7 @@ function App() {
           <Route path="/reset-password/:uuid" element={<ResetPasswordPage />} />
           <Route element={<ProtectedRoutes />}>
             <Route path="/account/profile" element={<ProfilePage />} />
+            <Route path="/profile/:userId" element={<UserProfilePage />} />
           </Route>
         </Routes>
       </Router>

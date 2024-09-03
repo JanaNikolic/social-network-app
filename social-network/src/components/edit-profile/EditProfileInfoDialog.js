@@ -74,15 +74,19 @@ const EditProfileInfoDialog = ({
       confirmPassword: "",
     },
     validationSchema: Yup.object({
-      oldPassword: Yup.string().min(6, "Minimum 6 characters").required("Required"),
-      newPassword: Yup.string().min(6, "Minimum 6 characters").required("Required"),
+      oldPassword: Yup.string()
+        .min(6, "Minimum 6 characters")
+        .required("Required"),
+      newPassword: Yup.string()
+        .min(6, "Minimum 6 characters")
+        .required("Required"),
       confirmPassword: Yup.string()
         .oneOf([Yup.ref("newPassword"), null], "Passwords must match")
         .required("Required"),
     }),
     onSubmit: async (values) => {
       try {
-        const data = await userService.changePassword({
+        await userService.changePassword({
           oldPassword: values.oldPassword,
           newPassword: values.newPassword,
         });
@@ -120,7 +124,10 @@ const EditProfileInfoDialog = ({
       autoComplete="off"
       PaperProps={{
         component: "form",
-        onSubmit: tabValue === 0 ? formikEditInfo.handleSubmit : formikChangePassword.handleSubmit,
+        onSubmit:
+          tabValue === 0
+            ? formikEditInfo.handleSubmit
+            : formikChangePassword.handleSubmit,
       }}
     >
       <DialogTitle>Edit Profile</DialogTitle>
@@ -135,7 +142,11 @@ const EditProfileInfoDialog = ({
         <ChangePasswordForm formikChangePassword={formikChangePassword} />
       </TabPanel>
       <DialogActions>
-        <Button onClick={handleCloseAndResetForms} variant="contained" color="secondary">
+        <Button
+          onClick={handleCloseAndResetForms}
+          variant="contained"
+          color="secondary"
+        >
           Cancel
         </Button>
         <Button type="submit" variant="contained" color="primary">

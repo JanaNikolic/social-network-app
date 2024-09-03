@@ -87,11 +87,29 @@ const dislikePost = async (postId) => {
   }
 };
 
+const fetchPostsForUser = async (userId, page = 0, size = 10) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axiosInstance.get(`${API_URL}/users/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { page, size },
+    });
+    if (response.status === 200) return response.data;
+  } catch (error) {
+    if (error.response)
+      throw new Error(
+        error.response.data.message || "Failed to fetch user's posts"
+      );
+    throw new Error(error.message || "Failed to fetch user's posts'");
+  }
+};
+
 const postService = {
   fetchPostsForLogedInUser,
   addPost,
   likePost,
   dislikePost,
   editPost,
+  fetchPostsForUser,
 };
 export default postService;
