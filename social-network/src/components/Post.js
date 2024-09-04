@@ -16,24 +16,36 @@ import moment from "moment";
 import postService from "../services/PostService";
 import jwtUtils from "../utils/jwtUtils";
 import EditPost from "./EditPost";
+import CommentForm from "./CommentForm";
+import { useNavigate } from "react-router-dom";
 
 const Post = ({
   id,
   userId,
   username,
+  name,
+  lastname,
   content,
-  isLiked,
-  numOfLikes,
-  numOfComments,
+  isLiked: initialIsLiked,
+  numOfLikes: initialNumOfLikes,
+  numOfComments: initialNumOfComments,
   createdAt,
   profilePicture,
+  setReloadComments, 
+  onCommentCountChange
 }) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [isEditPostOpen, setIsEditPostOpen] = useState(false);
   const [currentContent, setCurrentContent] = useState(content);
+  const [isLiked, setIsLiked] = useState(initialIsLiked);
+  const [numOfLikes, setNumOfLikes] = useState(initialNumOfLikes);
+  const [numOfComments, setNumOfComments] = useState(initialNumOfComments);
+  const [profilePic, setProfilePicture] = useState(profilePicture);
+  const [isAddCommentOpen, setIsAddCommentOpen] = useState(false);
+  const [commentId, setCommentId] = useState(null);
   const currentUserId = Number(jwtUtils.getIdFromToken());
-  const [profilePic, setProfilePicture] = useState(null);
+  const navigate = useNavigate();
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -46,6 +58,10 @@ const Post = ({
 
   const handleEditPostClose = () => {
     setIsEditPostOpen(false);
+  };
+
+  const handleAddCommentClose = () => {
+    setIsAddCommentOpen(false);
   };
 
   const handleSaveEdit = (newContent, message) => {
@@ -87,15 +103,38 @@ const Post = ({
     try {
       if (isLiked) {
         await postService.dislikePost(id);
-        isLiked = false;
+        setIsLiked(false);
+        setNumOfLikes((prevLikes) => prevLikes - 1);
       } else {
         await postService.likePost(id);
-        isLiked = true;
+        setIsLiked(true);
+        setNumOfLikes((prevLikes) => prevLikes + 1);
       }
     } catch (err) {
       setSnackbarMessage(err.message);
       setSnackbarOpen(true);
     }
+  };
+
+  const handleCreateCommentOpen = () => {
+    setIsAddCommentOpen(true);
+  };
+
+  const handleAddComment = async (content, postId) => {
+    try {
+      const newComment = await postService.postComment(content, postId, commentId);
+      setSnackbarMessage("Successfully posted comment");
+      setSnackbarOpen(true);
+      setReloadComments(true);
+      setNumOfComments((prevComments) => prevComments + 1);
+    } catch (err) {
+      setSnackbarMessage(err.message);
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handlePostClick = () => {
+    navigate(`/${username}/${userId}/post/${id}`);
   };
 
   return (
@@ -109,7 +148,22 @@ const Post = ({
             alt={username}
             sx={{ width: 50, height: 50, mr: 2 }}
           />
-          <Typography variant="h6">{username}</Typography>
+          <Typography
+                  display="flex"
+                  flexDirection="column"
+                  variant="body1"
+                  color="textPrimary"
+                  fontWeight="bold"
+                >
+                  {name} {lastname}{" "}
+                  <Typography
+                    component="span"
+                    variant="subtitle2"
+                    color="textSecondary"
+                  >
+                    @{username}
+                  </Typography>
+                </Typography>
         </Box>
         {currentUserId === userId && (
           <IconButton onClick={handleEditPostOpen}>
@@ -117,7 +171,11 @@ const Post = ({
           </IconButton>
         )}
       </Box>
-      <Typography variant="body1" sx={{ mt: 2, mb: 2 }}>
+      <Typography
+        variant="body1"
+        sx={{ mt: 2, mb: 2, cursor: "pointer" }}
+        onClick={handlePostClick}
+      >
         {currentContent}
       </Typography>
       <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -131,7 +189,9 @@ const Post = ({
           <Typography variant="body2" sx={{ mr: 2 }}>
             {numOfLikes}
           </Typography>
-          <CommentIcon />
+          <IconButton onClick={handleCreateCommentOpen}>
+            <CommentIcon />
+          </IconButton>
           <Typography variant="body2" sx={{ ml: 1 }}>
             {numOfComments}
           </Typography>
@@ -152,6 +212,15 @@ const Post = ({
         handleSaveEdit={handleSaveEdit}
         postContent={currentContent}
         postId={id}
+      />
+      <CommentForm
+        open={isAddCommentOpen}
+        handleClose={handleAddCommentClose}
+        postId={id}
+        setSnackbarMessage={setSnackbarMessage}
+        setSnackbarOpen={setSnackbarOpen}
+        onSubmit={handleAddComment}
+        isEditing={false}
       />
     </Card>
   );

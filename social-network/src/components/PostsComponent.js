@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Typography, Box } from "@mui/material";
 import Post from "../components/Post";
 import postService from "../services/PostService";
+import jwtUtils from "../utils/jwtUtils";
 
 const PostsComponent = ({
   profilePicture,
@@ -27,7 +28,8 @@ const PostsComponent = ({
         if (profileUserId && isFriend) {
           data = await postService.fetchPostsForUser(profileUserId, page, 10);
         } else if (!profileUserId && !isFriend) {
-          data = await postService.fetchPostsForLogedInUser(page, 10);
+          const userId = jwtUtils.getIdFromToken();
+          data = await postService.fetchPostsForUser(userId, page, 10);
         }
 
         if (data && data.posts.length > 0) {
@@ -92,6 +94,8 @@ const PostsComponent = ({
               key={post.id}
               id={post.id}
               userId={post.postedBy.id}
+              name={post.postedBy.name}
+              lastname={post.postedBy.lastname}
               username={post.postedBy.username}
               content={post.content}
               isLiked={post.isLiked}

@@ -12,8 +12,7 @@ const UserInfoCard = ({ user }) => {
       try {
         const data = await userService.fetchProfilePicture(user.id);
         setProfilePicture(data);
-      } catch (err) {
-      }
+      } catch (err) {}
     };
     fetchProfilePicture();
   }, [user.id]);
@@ -24,7 +23,14 @@ const UserInfoCard = ({ user }) => {
 
   return (
     <Card
-      sx={{ padding: 2, border: "1px solid #ddd", borderRadius: "8px", mb: 2, width: "25%", cursor: 'pointer' }}
+      sx={{
+        padding: 2,
+        border: "1px solid #ddd",
+        borderRadius: "8px",
+        mb: 2,
+        width: "25%",
+        cursor: "pointer",
+      }}
       onClick={handleCardClick}
     >
       <Box display="flex" alignItems="center" justifyContent="left">
@@ -34,10 +40,10 @@ const UserInfoCard = ({ user }) => {
           sx={{ width: 50, height: 50, mr: 2 }}
         />
         <Box display="flex" alignItems="left" flexDirection="column">
-          <Typography variant="h5" sx={{ mt: 2 }}>
+          <Typography variant="body1">
             {`${user.name} ${user.lastname}`}
           </Typography>
-          <Typography variant="body1">@{user.username}</Typography>
+          <Typography variant="body2">@{user.username}</Typography>
         </Box>
       </Box>
     </Card>

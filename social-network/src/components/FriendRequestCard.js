@@ -11,18 +11,21 @@ import {
 } from "@mui/material";
 import userService from "../services/UserService";
 import friendService from "../services/FriendService";
+import { useNavigate } from "react-router-dom";
 
 const FriendRequestCard = ({ user, onRemoveRequest }) => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
 
   const handleMenuOpen = (event) => {
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
 
@@ -40,7 +43,8 @@ const FriendRequestCard = ({ user, onRemoveRequest }) => {
     fetchProfilePicture();
   }, [user.id]);
 
-  const handleAcceptRequest = async () => {
+  const handleAcceptRequest = async (event) => {
+    event.stopPropagation();
     try {
       await friendService.acceptFriendRequest(user.id);
       onRemoveRequest(user.id, true);
@@ -51,7 +55,8 @@ const FriendRequestCard = ({ user, onRemoveRequest }) => {
     }
   };
 
-  const handleDeleteRequest = async () => {
+  const handleDeleteRequest = async (event) => {
+    event.stopPropagation();
     try {
       await friendService.rejectFriendRequest(user.id);
       onRemoveRequest(user.id, false);
@@ -62,6 +67,10 @@ const FriendRequestCard = ({ user, onRemoveRequest }) => {
     }
   };
 
+  const handleCardClick = () => {
+    navigate(`/profile/${user.id}`);
+  };
+
   return (
     <Card
       sx={{
@@ -70,6 +79,7 @@ const FriendRequestCard = ({ user, onRemoveRequest }) => {
         borderRadius: "8px",
         mb: 2,
         width: "45%",
+        cursor: "pointer",
       }}
     >
       <Box display="flex" alignItems="center" justifyContent="left">
@@ -77,21 +87,21 @@ const FriendRequestCard = ({ user, onRemoveRequest }) => {
           src={profilePicture}
           alt={user.username}
           sx={{ width: 50, height: 50, mr: 2 }}
+          onClick={handleCardClick}
         />
-        <Box display="flex" alignItems="left" flexDirection="column" mr={2}>
+        <Box display="flex" alignItems="left" flexDirection="column" mr={2} width="50%">
           <Typography
-            variant="h5"
+            variant="body1"
             sx={{
-              mt: 2,
               overflow: "hidden",
               textOverflow: "ellipsis",
-              width: "18rem",
             }}
             noWrap
+            onClick={handleCardClick}
           >
             {`${user.name} ${user.lastname}`}
           </Typography>
-          <Typography variant="body1">@{user.username}</Typography>
+          <Typography variant="body2">@{user.username}</Typography>
         </Box>
         <Button variant="contained" color="primary" onClick={handleMenuOpen}>
           Respond
@@ -114,4 +124,5 @@ const FriendRequestCard = ({ user, onRemoveRequest }) => {
     </Card>
   );
 };
+
 export default FriendRequestCard;

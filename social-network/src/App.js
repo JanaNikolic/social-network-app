@@ -7,6 +7,7 @@ import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import LoggedInUserGuard from "./utils/LoggedInUserGuard";
 import UserProfilePage from "./pages/UserProfilePage";
+import PostPage from "./pages/PostPage";
 
 const theme = createTheme({
   palette: {
@@ -58,6 +59,7 @@ function App() {
           <Route element={<ProtectedRoutes />}>
             <Route path="/account/profile" element={<ProfilePage />} />
             <Route path="/profile/:userId" element={<UserProfilePage />} />
+            <Route path="/:username/:userId/post/:postId" element={<PostPage />} />
           </Route>
         </Routes>
       </Router>

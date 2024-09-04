@@ -31,7 +31,7 @@ const UserProfilePage = () => {
 
   const handleChangeRequest = () => {
     setReloadPosts(true);
-    setUserData({...userData, isFriend: true});
+    setUserData({ ...userData, isFriend: true });
   };
 
   const fetchUserData = async () => {
@@ -58,7 +58,6 @@ const UserProfilePage = () => {
     fetchProfilePicture();
   }, [userId]);
 
-
   return (
     <Container maxWidth="lg" sx={{ backgroundColor: "primary.white" }}>
       {userData ? (
@@ -81,7 +80,10 @@ const UserProfilePage = () => {
               </Typography>
               <Typography variant="body1">@{userData.username}</Typography>
             </Box>
-            <FriendRequestButton userData={userData} onChangeRequest={handleChangeRequest}/>
+            <FriendRequestButton
+              userData={userData}
+              onChangeRequest={handleChangeRequest}
+            />
           </Box>
           <Box
             display="flex"
@@ -118,7 +120,16 @@ const UserProfilePage = () => {
           />
         </Box>
       ) : (
-        <Typography>Loading...</Typography>
+        <Typography
+          sx={{
+            margin: "auto",
+            textAlign: "center",
+            height: "100%",
+            padding: "20vh",
+          }}
+        >
+          Loading...
+        </Typography>
       )}
     </Container>
   );
