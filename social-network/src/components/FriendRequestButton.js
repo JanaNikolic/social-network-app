@@ -7,20 +7,20 @@ const FriendRequestButton = ({ userData, onChangeRequest }) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [request, setRequest] = useState(null);
-  const [user, setUser] = useState(userData);
 
   useEffect(() => {
     const fetchFriendRequest = async () => {
       try {
-        const data = await friendService.getFriendRequestsByUserId(user.id);
+        const data = await friendService.getFriendRequestsByUserId(userData.id);
         setRequest(data);
       } catch (err) {
         setSnackbarMessage(err.message);
         setSnackbarOpen(true);
       }
     };
+
     fetchFriendRequest();
-  }, [user]);
+  }, [userData]);
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -36,12 +36,11 @@ const FriendRequestButton = ({ userData, onChangeRequest }) => {
 
   const handleAcceptRequest = async () => {
     try {
-      await friendService.acceptFriendRequest(user.id);
+      await friendService.acceptFriendRequest(userData.id);
       setSnackbarMessage("Friend request accepted");
       setSnackbarOpen(true);
-      setUser({ ...user, isFriend: true });
-      setRequest({ ...request, status: "ACCEPTED" });
       onChangeRequest();
+      setRequest((prevRequest) => ({ ...prevRequest, status: "ACCEPTED" }));
       handleMenuClose();
     } catch (err) {
       setSnackbarMessage(err.message);
@@ -51,12 +50,11 @@ const FriendRequestButton = ({ userData, onChangeRequest }) => {
 
   const handleDeleteRequest = async () => {
     try {
-      await friendService.rejectFriendRequest(user.id);
+      await friendService.rejectFriendRequest(userData.id);
       setSnackbarMessage("Friend request rejected");
       setSnackbarOpen(true);
-      setUser({ ...user, isFriend: false });
-      setRequest(null);
       onChangeRequest();
+      setRequest(null);
       handleMenuClose();
     } catch (err) {
       setSnackbarMessage(err.message);
@@ -66,7 +64,7 @@ const FriendRequestButton = ({ userData, onChangeRequest }) => {
 
   const handleSendRequest = async () => {
     try {
-      const data = await friendService.sendFriendRequest(user.id);
+      const data = await friendService.sendFriendRequest(userData.id);
       setSnackbarMessage("Friend request sent");
       setSnackbarOpen(true);
       setRequest(data);
@@ -81,7 +79,7 @@ const FriendRequestButton = ({ userData, onChangeRequest }) => {
       {request ? (
         <Box>
           <Box ml="auto">
-            {request.status === "PENDING" && user.id === request.senderId ? (
+            {request.status === "PENDING" && userData.id === request.senderId ? (
               <Button
                 variant="contained"
                 color="primary"
@@ -90,11 +88,11 @@ const FriendRequestButton = ({ userData, onChangeRequest }) => {
                 Respond
               </Button>
             ) : request.status === "PENDING" &&
-              user.id === request.receiverId ? (
+              userData.id === request.receiverId ? (
               <Button variant="contained" color="secondary">
                 Request Sent
               </Button>
-            ) : request.status === "ACCEPTED" || user.isFriend ? (
+            ) : request.status === "ACCEPTED" || userData.isFriend ? (
               <Button variant="contained" color="primary">
                 Friend
               </Button>

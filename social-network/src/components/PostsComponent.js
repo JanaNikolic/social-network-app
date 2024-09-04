@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { Typography, Box } from "@mui/material";
 import Post from "../components/Post";
 import postService from "../services/PostService";
@@ -21,39 +21,38 @@ const PostsComponent = ({
   reloadPosts,
   setReloadPosts,
 }) => {
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        let data;
-        if (profileUserId && isFriend) {
-          data = await postService.fetchPostsForUser(profileUserId, page, 10);
-        } else if (!profileUserId && !isFriend) {
-          const userId = jwtUtils.getIdFromToken();
-          data = await postService.fetchPostsForUser(userId, page, 10);
-        }
-
-        if (data && data.posts.length > 0) {
-          setPosts((prevPosts) => [...prevPosts, ...data.posts]);
-          setPage((prevPage) => prevPage + 1);
-        } else {
-          setHasMore(false);
-        }
-      } catch (err) {
-        setSnackbarMessage(err.message);
-        setSnackbarOpen(true);
-        setLoadingMore(false);
-      } finally {
-        if (reloadPosts) {
-          setReloadPosts(false);
-        }
-        setLoadingMore(false);
+  const fetchPosts = useCallback(async () => {
+    try {
+      let data;
+      if (profileUserId && isFriend) {
+        data = await postService.fetchPostsForUser(profileUserId, page, 10);
+      } else if (!profileUserId && !isFriend) {
+        const userId = jwtUtils.getIdFromToken();
+        data = await postService.fetchPostsForUser(userId, page, 10);
       }
-    };
 
+      if (data && data.posts.length > 0) {
+        setPosts((prevPosts) => [...prevPosts, ...data.posts]);
+        setPage((prevPage) => prevPage + 1);
+      } else {
+        setHasMore(false);
+      }
+    } catch (err) {
+      setSnackbarMessage(err.message);
+      setSnackbarOpen(true);
+    } finally {
+      if (reloadPosts) {
+        setReloadPosts(false);
+      }
+      setLoadingMore(false);
+    }
+  }, [profileUserId, isFriend, page, reloadPosts, setPosts, setPage, setHasMore, setSnackbarMessage, setSnackbarOpen, setLoadingMore, setReloadPosts]);
+
+  useEffect(() => {
     if (reloadPosts) {
       setPosts([]);
       setPage(0);
-      setHasMore(false);
+      setHasMore(true);
       fetchPosts();
     } else {
       const observer = new IntersectionObserver(
@@ -73,17 +72,7 @@ const PostsComponent = ({
         if (target) observer.unobserve(target);
       };
     }
-  }, [
-    page,
-    loadingMore,
-    hasMore,
-    profileUserId,
-    setPosts,
-    setSnackbarMessage,
-    setSnackbarOpen,
-    reloadPosts,
-    setReloadPosts
-  ]);
+  }, [reloadPosts, fetchPosts, hasMore, loadingMore]);
 
   return (
     <Box>

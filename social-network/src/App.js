@@ -8,6 +8,8 @@ import ProtectedRoutes from "./utils/ProtectedRoutes";
 import LoggedInUserGuard from "./utils/LoggedInUserGuard";
 import UserProfilePage from "./pages/UserProfilePage";
 import PostPage from "./pages/PostPage";
+import HomePage from "./pages/HomePage";
+import ProtectedLayout from "./components/ProtectedLayout";
 
 const theme = createTheme({
   palette: {
@@ -16,7 +18,6 @@ const theme = createTheme({
       white: "#f6f0ed",
       contrastText: "#ffffff",
       dark: "#28536b",
-      // bex: "#BBB193",
     },
     text: {
       primary: "#000000",
@@ -57,9 +58,15 @@ function App() {
           </Route>
           <Route path="/reset-password/:uuid" element={<ResetPasswordPage />} />
           <Route element={<ProtectedRoutes />}>
-            <Route path="/account/profile" element={<ProfilePage />} />
-            <Route path="/profile/:userId" element={<UserProfilePage />} />
-            <Route path="/:username/:userId/post/:postId" element={<PostPage />} />
+            <Route element={<ProtectedLayout />}>
+              <Route path="/account/profile" element={<ProfilePage />} />
+              <Route path="/profile/:userId" element={<UserProfilePage />} />
+              <Route
+                path="/:username/:userId/post/:postId"
+                element={<PostPage />}
+              />
+              <Route path="/home" element={<HomePage />} />
+            </Route>
           </Route>
         </Routes>
       </Router>

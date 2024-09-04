@@ -178,6 +178,23 @@ const fetchPostById = async (postId) => {
   }
 };
 
+const fetchFriendsPosts = async (page = 0, size = 10) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axiosInstance.get(`${API_URL}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { page, size },
+    });
+    if (response.status === 200) return response.data;
+  } catch (error) {
+    if (error.response)
+      throw new Error(
+        error.response.data.message || "Failed to fetch friend's posts"
+      );
+    throw new Error(error.message || "Failed to fetch friend's posts");
+  }
+};
+
 const postService = {
   addPost,
   likePost,
@@ -188,6 +205,7 @@ const postService = {
   postComment,
   editComment,
   deleteComment,
-  fetchPostById
+  fetchPostById,
+  fetchFriendsPosts
 };
 export default postService;

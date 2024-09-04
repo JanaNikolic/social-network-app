@@ -119,9 +119,7 @@ const editUserInfo = async (body) => {
     if (response.status === 200) return response.data;
   } catch (error) {
     if (error.response)
-      throw new Error(
-        error.response.data.message || "An error occurred"
-      );
+      throw new Error(error.response.data.message || "An error occurred");
     throw new Error(error.message || "An error occurred");
   }
 };
@@ -136,9 +134,12 @@ const changePassword = async (body) => {
   } catch (error) {
     if (error.response)
       throw new Error(
-        error.response.data.message || "An error occurred during password change"
+        error.response.data.message ||
+          "An error occurred during password change"
       );
-    throw new Error(error.message || "An error occurred during password change");
+    throw new Error(
+      error.message || "An error occurred during password change"
+    );
   }
 };
 
@@ -158,6 +159,27 @@ const fetchUserById = async (userId) => {
   }
 };
 
+const searchUsers = async (searchQuery, page , size) => {
+  try {
+    const token = localStorage.getItem("token");
+    const userResponse = await axiosInstance.get(`${API_URL}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      params: {
+        page: page,
+        size: size,
+        name: searchQuery,
+      },
+    });
+    if (userResponse.status === 200) return userResponse.data;
+  } catch (error) {
+    if (error.response)
+      throw new Error(
+        error.response.data.message || "Failed to search users"
+      );
+    throw new Error(error.message || "Failed to search users");
+  }
+};
+
 const userService = {
   register,
   resetPassword,
@@ -168,5 +190,6 @@ const userService = {
   editUserInfo,
   changePassword,
   fetchUserById,
+  searchUsers,
 };
 export default userService;

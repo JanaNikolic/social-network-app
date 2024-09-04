@@ -80,16 +80,26 @@ const FriendRequestCard = ({ user, onRemoveRequest }) => {
         mb: 2,
         width: "45%",
         cursor: "pointer",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
       }}
     >
-      <Box display="flex" alignItems="center" justifyContent="left">
+      <Box display="flex" alignItems="center">
         <Avatar
           src={profilePicture}
           alt={user.username}
           sx={{ width: 50, height: 50, mr: 2 }}
           onClick={handleCardClick}
         />
-        <Box display="flex" alignItems="left" flexDirection="column" mr={2} width="50%">
+        <Box
+          display="flex"
+          alignItems="flex-start"
+          flexDirection="column"
+          mr={2}
+          width="auto"
+        >
           <Typography
             variant="body1"
             sx={{
@@ -103,18 +113,23 @@ const FriendRequestCard = ({ user, onRemoveRequest }) => {
           </Typography>
           <Typography variant="body2">@{user.username}</Typography>
         </Box>
-        <Button variant="contained" color="primary" onClick={handleMenuOpen}>
-          Respond
-        </Button>
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem onClick={handleAcceptRequest}>Confirm</MenuItem>
-          <MenuItem onClick={handleDeleteRequest}>Delete</MenuItem>
-        </Menu>
       </Box>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleMenuOpen}
+        sx={{ marginLeft: "auto" }}
+      >
+        Respond
+      </Button>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={handleAcceptRequest}>Confirm</MenuItem>
+        <MenuItem onClick={handleDeleteRequest}>Delete</MenuItem>
+      </Menu>
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

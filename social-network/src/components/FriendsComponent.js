@@ -53,20 +53,17 @@ const FriendsComponent = ({ setSnackbarMessage, setSnackbarOpen }) => {
         display: "flex",
         flexWrap: "wrap",
         gap: "10px",
-        justifyContent: "space-between",
         alignItems: "flex-start",
+        justifyContent: "flex-start",
       }}
     >
       {friends.length > 0 ? (
-        friends.map((friend) => (
-          <UserInfoCard key={friend.id} user={friend} />
-        ))
+        friends.map((friend) => <UserInfoCard key={friend.id} user={friend} />)
       ) : (
         <Typography>No friends to display.</Typography>
       )}
       <div id="scroll-anchor" style={{ height: "20px" }} />
     </Box>
   );
-  
 };
 export default FriendsComponent;
