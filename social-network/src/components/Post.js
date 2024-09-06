@@ -31,8 +31,8 @@ const Post = ({
   numOfComments: initialNumOfComments,
   createdAt,
   profilePicture,
-  setReloadComments, 
-  onCommentCountChange
+  setReloadComments,
+  onCommentCountChange,
 }) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -122,11 +122,15 @@ const Post = ({
 
   const handleAddComment = async (content, postId) => {
     try {
-      const newComment = await postService.postComment(content, postId, commentId);
+      setNumOfComments((prevComments) => prevComments + 1);
+      const newComment = await postService.postComment(
+        content,
+        postId,
+        commentId
+      );
       setSnackbarMessage("Successfully posted comment");
       setSnackbarOpen(true);
       setReloadComments(true);
-      setNumOfComments((prevComments) => prevComments + 1);
     } catch (err) {
       setSnackbarMessage(err.message);
       setSnackbarOpen(true);
@@ -149,21 +153,21 @@ const Post = ({
             sx={{ width: 50, height: 50, mr: 2 }}
           />
           <Typography
-                  display="flex"
-                  flexDirection="column"
-                  variant="body1"
-                  color="textPrimary"
-                  fontWeight="bold"
-                >
-                  {name} {lastname}{" "}
-                  <Typography
-                    component="span"
-                    variant="subtitle2"
-                    color="textSecondary"
-                  >
-                    @{username}
-                  </Typography>
-                </Typography>
+            display="flex"
+            flexDirection="column"
+            variant="body1"
+            color="textPrimary"
+            fontWeight="bold"
+          >
+            {name} {lastname}{" "}
+            <Typography
+              component="span"
+              variant="subtitle2"
+              color="textSecondary"
+            >
+              @{username}
+            </Typography>
+          </Typography>
         </Box>
         {currentUserId === userId && (
           <IconButton onClick={handleEditPostOpen}>

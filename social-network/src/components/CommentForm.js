@@ -7,7 +7,6 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
-import postService from "../services/PostService";
 
 const CommentForm = ({
   open,

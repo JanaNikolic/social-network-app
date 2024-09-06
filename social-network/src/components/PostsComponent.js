@@ -32,8 +32,13 @@ const PostsComponent = ({
       }
 
       if (data && data.posts.length > 0) {
-        setPosts((prevPosts) => [...prevPosts, ...data.posts]);
+        setPosts((prevPosts) => {
+          const newPosts = [...prevPosts, ...data.posts];
+          const uniquePosts = Array.from(new Map(newPosts.map(post => [post.id, post])).values());
+          return uniquePosts;
+        });
         setPage((prevPage) => prevPage + 1);
+        setHasMore(data.posts.length === 10);
       } else {
         setHasMore(false);
       }
@@ -46,7 +51,7 @@ const PostsComponent = ({
       }
       setLoadingMore(false);
     }
-  }, [profileUserId, isFriend, page, reloadPosts, setPosts, setPage, setHasMore, setSnackbarMessage, setSnackbarOpen, setLoadingMore, setReloadPosts]);
+  }, [profileUserId, isFriend, page, setPosts, setPage, setHasMore, setSnackbarMessage, setSnackbarOpen, setLoadingMore, reloadPosts, setReloadPosts]);
 
   useEffect(() => {
     if (reloadPosts) {
@@ -75,7 +80,7 @@ const PostsComponent = ({
   }, [reloadPosts, fetchPosts, hasMore, loadingMore]);
 
   return (
-    <Box>
+    <Box sx={{width: "100%"}}>
       {profileUserId && !isFriend && <Typography>Not yet friends</Typography>}
       {posts.length > 0
         ? posts.map((post) => (

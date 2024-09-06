@@ -219,7 +219,7 @@ const ProfilePage = () => {
           <Tab label="Friends" />
           <Tab label="Friend Requests" />
         </Tabs>
-        <TabPanel value={tabValue} index={0}>
+        <TabPanel value={tabValue} index={0} style={{width: "100%"}}>
           <PostsComponent
             profilePicture={profilePicture}
             posts={posts}

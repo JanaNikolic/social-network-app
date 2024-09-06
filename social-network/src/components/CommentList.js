@@ -199,9 +199,9 @@ const CommentList = ({ postId, reloadComments, setReloadComments }) => {
                 <IconButton onClick={() => handleEdit(comment)}>
                   <Edit />
                 </IconButton>
-                <IconButton onClick={() => handleDelete(comment.id)}>
+                {/* <IconButton onClick={() => handleDelete(comment.id)}>
                   <Delete />
-                </IconButton>
+                </IconButton> */}
               </Box>
             )}
           </ListItem>
